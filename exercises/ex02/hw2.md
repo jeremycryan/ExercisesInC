@@ -30,3 +30,11 @@
 3) I got a segmentation fault, presumably because I was trying to read from the array that no longer existed in allocated dynamic memory. When I moved the print statement to the inside of bar, it could run without an error, and printed (0, 1, 2...) instead of (42, 42, 42...).
 
 4) The addresses for the array are the same.
+
+### Links to other assignment pieces
+
+Here is my [modified version of aspace.c](https://github.com/jeremycryan/ExercisesInC/blob/master/exercises/ex02/aspace.c)
+
+Here is my [commented version of stack.c](https://github.com/jeremycryan/ExercisesInC/blob/master/exercises/ex02/stack.c).
+
+And finally, here is my [implementation of adder.c](https://github.com/jeremycryan/ExercisesInC/blob/master/exercises/ex02/adder.c). I had a bit of trouble getting the EOF character to end the program, so I instead ended it with a 'D' input. I figured that the assignment was focused more on robust pointer use than input parsing, but other than that one change my program should meet all the requirements.
