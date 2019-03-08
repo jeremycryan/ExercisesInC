@@ -52,6 +52,27 @@ double time_func(int iters, float(*func)())
     return t1 - t0;
 }
 
+/* Compute the total time used by a function.
+
+iters: number of times to call the function
+func: function to call
+*/
+double time_func_double(int iters, double(*func)())
+{
+    int i;
+    double f;
+    double t0, t1;
+
+    srandom(time(NULL));
+
+    t0 = get_seconds();
+    for (i=0; i<iters; i++) {
+        f = func();
+    }
+    t1 = get_seconds();
+    return t1 - t0;
+}
+
 
 main(int argc, char *argv[])
 {
@@ -76,4 +97,17 @@ main(int argc, char *argv[])
 
     time = time_func(iters, random_float);
     printf("%f ms \t random_float\n", time);
+
+    // Random double runs at 956 ms.
+    // My random double runs at 1932 ms, comparable to
+    // my_random_float2. It would probably be faster with
+    // embedded assembly.
+
+    time = time_func(iters, random_double);
+    printf("%f ms \t random_double\n", time);
+
+    time = time_func_double(iters, my_random_double);
+    printf("%f ms \t my_random_double\n", time);
+
+    //
 }
