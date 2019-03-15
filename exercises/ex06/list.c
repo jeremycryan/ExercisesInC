@@ -54,8 +54,16 @@ void print_list(Node **list) {
 * returns: int or -1 if the list is empty
 */
 int pop(Node **list) {
-    // FILL THIS IN!
-    return 0;
+
+    Node* first_node = *list;
+
+    // If the first element of the list is NULL, return -1
+    if (first_node == NULL) return -1;
+
+    // Otherwise, fetch the first element and change list to point to second.
+    *list = first_node -> next;
+    return first_node -> val;
+
 }
 
 
@@ -65,13 +73,17 @@ int pop(Node **list) {
 * val: value to add
 */
 void push(Node **list, int val) {
-    // FILL THIS IN!
+
+    Node* new_node;
+    new_node = make_node(val, *list);
+    *list = new_node;
+
 }
 
 
 /* Removes the first element with the given value
 *
-* Frees the removed node.
+* Frees the removed node. TODO
 *
 * list: pointer to pointer to Node
 * val: value to remove
@@ -79,8 +91,29 @@ void push(Node **list, int val) {
 * returns: number of nodes removed
 */
 int remove_by_value(Node **list, int val) {
-    // FILL THIS IN!
-    return 0;
+
+    Node* current = *list;
+    Node* last = NULL;
+    int num_removed = 0;
+
+    while (current != NULL) {
+
+      if (current -> val == val) {
+
+        // Remove the current node from list if it matches
+        last -> next = current -> next;
+        num_removed++;
+        //TODO free current
+
+      }
+
+      // Iterate along list
+      last = current;
+      current = current -> next;
+
+    }
+
+    return num_removed;
 }
 
 
@@ -91,7 +124,25 @@ int remove_by_value(Node **list, int val) {
 * list: pointer to pointer to Node
 */
 void reverse(Node **list) {
-    // FILL THIS IN!
+
+    Node* last = NULL;
+    Node* current = *list;
+    Node* next;
+
+    while (current != NULL) {
+
+      next = current -> next;
+      current -> next = last;
+
+      // Move along list
+      last = current;
+      current = next;
+
+    }
+
+    // Return pointer to last non-null node
+    *list = last;
+
 }
 
 
@@ -101,21 +152,27 @@ int main() {
     head->next->next = make_node(3, NULL);
     head->next->next->next = make_node(4, NULL);
 
+    // Expect [ 1 2 3 4 ]
     Node **list = &head;
     print_list(list);
 
+    // Expect [ 2 3 4 ]
     int retval = pop(list);
     print_list(list);
 
+    // Expect [ 11 2 3 4 ]
     push(list, retval+10);
     print_list(list);
 
+    // Expect [ 11 2 4 ]
     remove_by_value(list, 3);
     print_list(list);
 
+    // Expect [ 11 2 4 ]
     remove_by_value(list, 7);
     print_list(list);
 
+    // Expect [ 4 2 11 ]
     reverse(list);
     print_list(list);
 }
