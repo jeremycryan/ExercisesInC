@@ -178,7 +178,7 @@ int hash_hashable(Hashable *hashable)
 */
 int equal_int (void *ip, void *jp)
 {
-    // FILL THIS IN!
+    if (*(int*)ip == *(int*)jp) return 1;
     return 0;
 }
 
@@ -192,8 +192,8 @@ int equal_int (void *ip, void *jp)
 */
 int equal_string (void *s1, void *s2)
 {
-    // FILL THIS IN!
-    return 0;
+    if (strcmp((char*)s1, (char*)s2)) return 0;
+    return 1; //  If strings are the same, return 1
 }
 
 
@@ -207,7 +207,7 @@ int equal_string (void *s1, void *s2)
 */
 int equal_hashable(Hashable *h1, Hashable *h2)
 {
-    // FILL THIS IN!
+    if (h1->equal(h1, h2)) return 1;
     return 0;
 }
 
@@ -296,8 +296,15 @@ Node *prepend(Hashable *key, Value *value, Node *rest)
 /* Looks up a key and returns the corresponding value, or NULL */
 Value *list_lookup(Node *list, Hashable *key)
 {
-    // FILL THIS IN!
-    return NULL;
+    // If first element is null, return null
+    if (list == NULL) return NULL;
+
+    // If first element matches key, return its value.
+    if (key->equal(list->key, key)) return list->value;
+
+    // Otherwise, continue to iterate along list recursively.
+    return list_lookup(list->next, key);
+
 }
 
 
@@ -341,15 +348,26 @@ void print_map(Map *map)
 /* Adds a key-value pair to a map. */
 void map_add(Map *map, Hashable *key, Value *value)
 {
-    // FILL THIS IN!
+
+    // Put new item in a bucket based on its hash
+    int hash_idx = key->hash(key) % map->n;
+
+    // Make a new node pointing to the value in map it's being inserted before
+    Node* new_node = make_node(key, value, map->lists[hash_idx]);
+
+    // Replace map value with the new node
+    map->lists[hash_idx] = new_node;
+
 }
 
 
 /* Looks up a key and returns the corresponding value, or NULL. */
 Value *map_lookup(Map *map, Hashable *key)
 {
-    // FILL THIS IN!
-    return NULL;
+
+    int hash_idx = key->hash(key) % map->n;
+    return list_lookup(map->lists[hash_idx], key);
+
 }
 
 
