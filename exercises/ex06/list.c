@@ -145,6 +145,26 @@ void reverse(Node **list) {
 
 }
 
+int swap(Node **list) {
+
+  Node* first = *list;
+  Node* second;
+  Node* third;
+
+  if (first == NULL) return -1;
+  if (first -> next == NULL) return -1;
+
+  second = first -> next;
+  third = second -> next;
+
+  first -> next = third;
+  second -> next = first;
+  *list = second;
+
+  return 0;
+
+}
+
 
 int main() {
     Node *head = make_node(1, NULL);
@@ -174,5 +194,14 @@ int main() {
 
     // Expect [ 4 2 11 ]
     reverse(list);
+    print_list(list);
+
+    // Expect [ 2 4 11 ]
+    printf("%d", swap(list));
+    print_list(list);
+
+    retval = pop(list);
+    retval = pop(list);
+    printf("%d", swap(list));
     print_list(list);
 }

@@ -91,6 +91,21 @@ void free_rectangle(Rectangle *rectangle) {
     free(rectangle);
 }
 
+
+Circle* make_circle(Point* center, double radius, char* color) {
+  Circle* new_circ = malloc(sizeof(Circle));
+  new_circ -> center = make_point(center->x, center->y);
+  new_circ -> radius = radius;
+  new_circ -> color = strdup(color);
+  return new_circ;
+}
+
+void free_circle(Circle* circle) {
+  free_point(circle -> center);
+  free(circle -> color);
+  free(circle);
+}
+
 /* Check whether a point is inside a rectangle.
 
 The corner indicates the lower-left corner, and the positive-y axis is up.
@@ -109,4 +124,11 @@ int point_in_rect(Point *p, Rectangle *rect) {
     if (p->y > y + rect->height) return 0;
 
     return 1;
+}
+
+int main(char* args) {
+
+  Circle* circ = make_circle(make_point(3, 2), 10, "blue");
+  free_circle(circ);
+
 }

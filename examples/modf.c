@@ -31,7 +31,22 @@ length: number of elements in the array
 
 returns: new array, caller must free
 */
-// TODO: Write this function
+//
+double* get_int_part(double* array, int length) {
+
+  // Allocate memory for new array
+  double* return_array = malloc(length*sizeof(double));
+
+  // Copy each element, cast as integer, to new array
+  for (int i = 0; i < length; i++) {
+    return_array[i] = (int)array[i];
+  }
+
+  // Return pointer to heap-allocated array
+  return return_array;
+}
+
+
 
 void test_get_int_part()
 {
@@ -57,7 +72,22 @@ p: location where the address of the frac_array should go
 returns: new array, caller must free
 */
 //TODO: Write this function
+double* get_both_parts(double* array, int length, double** p) {
 
+  // Allocate memory for new arrays
+  double* newp = malloc(length*sizeof(double));
+  double* return_array = malloc(length*sizeof(double));
+
+  // Copy each element, cast as integer, to new array
+  for (int i = 0; i < length; i++) {
+    return_array[i] = (int)array[i];
+    newp[i] = array[i] - (int)array[i];
+  }
+
+  // Return pointer to heap-allocated array
+  *p = newp;
+  return return_array;
+}
 
 void test_get_both_parts()
 {
@@ -73,7 +103,7 @@ void test_get_both_parts()
         printf("%.18lf  %.18lf\n", int_part[i], expected_int[i]);
         printf("%.18lf  %.18lf\n", frac_part[i], expected_frac[i]);
         assert(int_part[i] == expected_int[i]);
-        assert(frac_part[i] == expected_frac[i]);
+        assert(abs(frac_part[i] - expected_frac[i]) < 1e-8);
     }
 }
 

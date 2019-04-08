@@ -20,6 +20,12 @@ typedef struct {
     double width, height;
 } Rectangle;
 
+typedef struct {
+  Point *center;
+  double radius;
+  char *color;
+} Circle;
+
 /* Return a new Point
 
 x, y: coordinates
@@ -59,6 +65,10 @@ char *rectangle_to_string(Rectangle *rectangle);
 rectangle: Rectangle
 */
 void free_rectangle(Rectangle *rectangle);
+
+Circle* make_circle(Point* center, double radius, char* color);
+
+void free_circle(Circle* circle);
 
 /* Check whether a point is inside a rectangle.
 
