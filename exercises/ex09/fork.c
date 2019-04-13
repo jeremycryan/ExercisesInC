@@ -18,6 +18,11 @@ License: MIT License https://opensource.org/licenses/MIT
 // errno is an external global variable that contains
 // error information
 extern int errno;
+int* four;
+
+
+// This global variable starts at 3.
+int three = 3;
 
 
 // get_seconds returns the number of seconds since the
@@ -33,7 +38,19 @@ double get_seconds() {
 void child_code(int i)
 {
     sleep(i);
+
     printf("Hello from child %d.\n", i);
+
+
+    three++;  //  Each print statement, three has not been incremented yet.
+              //  Therefore, global space is separate between threads.
+
+    (*four)++;  //  This heap-allocated value doesn't get incremented between
+                //  print statements, which makes me think that heap is separate
+                //  between threads.
+
+    printf("Three equals %d.\n", three);
+    printf("Four equals %d.\n", *four);
 }
 
 // main takes two parameters: argc is the number of command-line
@@ -41,6 +58,11 @@ void child_code(int i)
 // line arguments
 int main(int argc, char *argv[])
 {
+    four = malloc(sizeof(int));
+    *four = 4;
+
+    int five = 5;
+
     int status;
     pid_t pid;
     double start, stop;
@@ -72,6 +94,14 @@ int main(int argc, char *argv[])
 
         /* see if we're the parent or the child */
         if (pid == 0) {
+
+            five++;
+            printf("Five equals %d.\n", five);  //  Five does not increment
+                                                //  between loops, so stack
+                                                //  space isn't shared between
+                                                //  threads.
+
+
             child_code(i);
             exit(i);
         }
