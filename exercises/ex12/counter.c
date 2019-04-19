@@ -9,7 +9,17 @@ License: GNU GPLv3
 #include <stdlib.h>
 #include <pthread.h>
 
-#define NUM_CHILDREN 5
+#define NUM_CHILDREN 5000
+
+// Running with 5000 children results in
+// counter values around 4900, suggesting
+// the counter is not thread safe.
+//
+// This is probably because there is the potential
+// for multiple threads to try to increment the shared
+// counter at the same time, so it's possible for each
+// of two threads to read the same value, increment, and
+// then write the same value for a total of one increment.
 
 /* Print an error message and exit.
 */

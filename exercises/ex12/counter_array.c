@@ -8,8 +8,11 @@ License: GNU GPLv3
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include "mutex.h"
 
 #define NUM_CHILDREN 2
+
+Mutex* mutey_boi;
 
 void perror_exit(char *s)
 {
@@ -69,17 +72,33 @@ void join_thread(pthread_t thread)
 
 void child_code(Shared *shared)
 {
-    printf("Starting child at counter %d\n", shared->counter);
+    //printf("Starting child at counter %d\n", shared->counter);
 
     while (1) {
         if (shared->counter >= shared->end) {
             return;
         }
+
+        /* Adding mutex locks around the counter increment
+          results in 0 errors when its run, instead of a few
+          thousand. Thanks, science!
+
+          counter_array runs in 0.293s with mutex.
+          counter_array runs in 0.045s without mutex.
+
+          That's a fair amount of overhead, but it makes sense
+          considering that you can have several threads stalling
+          at any given time. I'd rather have it be a little slow
+          than have 96,000 errors in my counter.
+        */
+
+        //mutex_lock(mutey_boi);
         shared->array[shared->counter]++;
         shared->counter++;
+        //mutex_unlock(mutey_boi);
 
         if (shared->counter % 10000 == 0) {
-            printf("%d\n", shared->counter);
+            //printf("%d\n", shared->counter);
         }
     }
 }
@@ -88,7 +107,7 @@ void *entry(void *arg)
 {
     Shared *shared = (Shared *) arg;
     child_code(shared);
-    printf("Child done.\n");
+    //printf("Child done.\n");
     pthread_exit(NULL);
 }
 
@@ -96,7 +115,7 @@ void check_array(Shared *shared)
 {
     int i, errors=0;
 
-    printf("Checking...\n");
+    //printf("Checking...\n");
 
     for (i=0; i<shared->end; i++) {
         if (shared->array[i] != 1) errors++;
@@ -108,6 +127,7 @@ int main()
 {
     int i;
     pthread_t child[NUM_CHILDREN];
+    mutey_boi = make_mutex();
 
     Shared *shared = make_shared(1000000);
 
