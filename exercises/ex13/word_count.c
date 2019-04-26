@@ -12,6 +12,7 @@ Note: this version leaks memory.
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <glib.h>
 #include <glib/gstdio.h>
 
@@ -36,6 +37,14 @@ void pair_printor(gpointer value, gpointer user_data)
     printf("%d\t %s\n", pair->freq, pair->word);
 }
 
+/* Iterator that frees pairs. */
+void pair_freeer(gpointer value, gpointer user_data)
+{
+    Pair *pair = (Pair *) value;
+    g_free(pair -> word);
+    g_free(pair);
+}
+
 
 /* Iterator that prints keys and values. */
 void kv_printor (gpointer key, gpointer value, gpointer user_data)
@@ -51,6 +60,7 @@ void accumulator(gpointer key, gpointer value, gpointer user_data)
     Pair *pair = g_new(Pair, 1);
     pair->word = (gchar *) key;
     pair->freq = *(gint *) value;
+    g_free(value);
 
     g_sequence_insert_sorted(seq,
         (gpointer) pair,
@@ -66,7 +76,7 @@ void incr(GHashTable* hash, gchar *key)
     if (val == NULL) {
         gint *val1 = g_new(gint, 1);
         *val1 = 1;
-        g_hash_table_insert(hash, key, val1);
+        g_hash_table_insert(hash, g_strdup(key), val1);
     } else {
         *val += 1;
     }
@@ -76,7 +86,7 @@ int main(int argc, char** argv)
 {
     gchar *filename;
 
-    // open the file
+    // open the file //
     if (argc > 1) {
         filename = argv[1];
     } else {
@@ -104,6 +114,7 @@ int main(int argc, char** argv)
         for (int i=0; array[i] != NULL; i++) {
             incr(hash, array[i]);
         }
+        g_strfreev(array);
     }
     fclose(fp);
 
@@ -116,6 +127,9 @@ int main(int argc, char** argv)
 
     // iterate the sequence and print the pairs
     g_sequence_foreach(seq, (GFunc) pair_printor, NULL);
+
+    // iterate the sequence and print the pairs
+    g_sequence_foreach(seq, (GFunc) pair_freeer, NULL);
 
     // try (unsuccessfully) to free everything
     g_hash_table_destroy(hash);
